@@ -1,75 +1,59 @@
-<p align="center">
-  <img alt="Evilginx2 Logo" src="https://raw.githubusercontent.com/kgretzky/evilginx2/master/media/img/evilginx2-logo-512.png" height="160" />
-  <p align="center">
-    <img alt="Evilginx2 Title" src="https://raw.githubusercontent.com/kgretzky/evilginx2/master/media/img/evilginx2-title-black-512.png" height="60" />
-  </p>
-</p>
+# Evilginx 3.0 install notes - Jackson Giordano
+Most notes from this are derived from this youtube video: https://www.youtube.com/watch?v=r4Y53s6P51k
 
-# Evilginx 3.0
+And alot of notes from this website, although it could be blocked from certain networks due to its security so I would not access it personally.
+    https://evilginx.com/ 
 
-**Evilginx** is a man-in-the-middle attack framework used for phishing login credentials along with session cookies, which in turn allows to bypass 2-factor authentication protection.
 
-This tool is a successor to [Evilginx](https://github.com/kgretzky/evilginx), released in 2017, which used a custom version of nginx HTTP server to provide man-in-the-middle functionality to act as a proxy between a browser and phished website.
-Present version is fully written in GO as a standalone application, which implements its own HTTP and DNS server, making it extremely easy to set up and use.
+## Setting up server
+ 1. Through Azure setup an Ubuntu server
+ - Ubuntu Version 22.04 region America.
+ - setup ssh into PuTTY from computer
+ 2. Setup up Domain name
+ - Not too sure how we could do this, unless we have access to Microsofts Web hosting functionality
+## Open Terminal and log into server
 
-<p align="center">
-  <img alt="Screenshot" src="https://raw.githubusercontent.com/kgretzky/evilginx2/master/media/img/screen.png" height="320" />
-</p>
+    ssh root@[ENTERIPADDRESSHERE]
 
-## Disclaimer
+    apt update
+ 
+    apt upgrade
 
-I am very much aware that Evilginx can be used for nefarious purposes. This work is merely a demonstration of what adept attackers can do. It is the defender's responsibility to take such attacks into consideration and find ways to protect their users against this type of phishing attacks. Evilginx should be used only in legitimate penetration testing assignments with written permission from to-be-phished parties.
+    apt install golang
 
-## Evilginx Mastery Training Course
+    git clone https://github.com/kgretzky/evilginx2
+    
+    cd evilginx2
 
-If you want everything about reverse proxy phishing with **Evilginx** - check out my [Evilginx Mastery](https://academy.breakdev.org/evilginx-mastery) course!
+    go build
 
-<p align="center">
-  <a href="https://academy.breakdev.org/evilginx-mastery"><img alt="Evilginx Mastery" src="https://raw.githubusercontent.com/kgretzky/evilginx2/master/media/img/evilginx_mastery.jpg" height="320" /></a>
-</p>
+    ./evilginx2
+    
+    exit
+## Adding Config
 
-Learn everything about the latest methods of phishing, using reverse proxying to bypass Multi-Factor Authentication. Learn to think like an attacker, during your red team engagements, and become the master of phishing with Evilginx.
+    cd root/.evilginx2
 
-Grab it here:
-https://academy.breakdev.org/evilginx-mastery
+    nano config.json
 
-## Official Gophish integration
+- replace domain with our domain for phishing
+- replace external ipv4 with the IP from azure ubuntu server
 
-If you'd like to use Gophish to send out phishing links compatible with Evilginx, please use the official Gophish integration with Evilginx 3.3.
-You can find the custom version here in the forked repository: [Gophish with Evilginx integration](https://github.com/kgretzky/gophish/)
 
-If you want to learn more about how to set it up, please follow the instructions in [this blog post](https://breakdev.org/evilginx-3-3-go-phish/)
+## Create Phishlet
 
-## Write-ups
+    cp phishlets/example.yaml phislets/ASTest.yaml
 
-If you want to learn more about reverse proxy phishing, I've published extensive blog posts about **Evilginx** here:
+- I updated ASTest.yaml for our specific testing purposes
+- We still need to replace the two sections with our test domain
 
-[Evilginx 2.0 - Release](https://breakdev.org/evilginx-2-next-generation-of-phishing-2fa-tokens)
+## Deploy Phishlet
 
-[Evilginx 2.1 - First Update](https://breakdev.org/evilginx-2-1-the-first-post-release-update/)
+    phishlets hostname AStest EXAMPLEDOMAIN
+    
+    phishlets enable AStest
 
-[Evilginx 2.2 - Jolly Winter Update](https://breakdev.org/evilginx-2-2-jolly-winter-update/)
+## Retrieve Lure
 
-[Evilginx 2.3 - Phisherman's Dream](https://breakdev.org/evilginx-2-3-phishermans-dream/)
-
-[Evilginx 2.4 - Gone Phishing](https://breakdev.org/evilginx-2-4-gone-phishing/)
-
-[Evilginx 3.0](https://breakdev.org/evilginx-3-0-evilginx-mastery/)
-
-[Evilginx 3.2](https://breakdev.org/evilginx-3-2/)
-
-[Evilginx 3.3](https://breakdev.org/evilginx-3-3-go-phish/)
-
-## Help
-
-In case you want to learn how to install and use **Evilginx**, please refer to online documentation available at:
-
-https://help.evilginx.com
-
-## Support
-
-I DO NOT offer support for providing or creating phishlets. I will also NOT help you with creation of your own phishlets. Please look for ready-to-use phishlets, provided by other people.
-
-## License
-
-**evilginx2** is made by Kuba Gretzky ([@mrgretzky](https://twitter.com/mrgretzky)) and it's released under BSD-3 license.
+    lures get-url 0
+# That should be it!!!
